@@ -15,7 +15,6 @@
     </parent>
 
     <dependencies>
-        <!-- Web dependency -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -31,6 +30,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.app.LoginApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
