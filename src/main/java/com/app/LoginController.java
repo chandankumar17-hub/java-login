@@ -5,9 +5,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class LoginController {
 
+    @GetMapping("/")
+    public String home() {
+        return "Welcome to Login !";
+    }
+
     @PostMapping("/login")
     public String login(@RequestBody User user) {
-        if ("admin".equals(user.username) && "1234".equals(user.password)) {
+        if("admin".equals(user.username) && "1234".equals(user.password)) {
             return "Login Success";
         }
         return "Login Failed";
