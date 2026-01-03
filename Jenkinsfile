@@ -16,17 +16,17 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                echo "Workspace content:"
-                ls -la
+stage('Build Docker Image') {
+    steps {
+        sh '''
+        echo "Workspace content:"
+        ls -la
 
-                echo "Building Docker image..."
-                docker build -t my-app:${IMAGE_TAG} -f DevOps-Project-01/Java-Login-App/Dockerfile DevOps-Project-01/Java-Login-App
-                '''
-            }
-        }
+        echo "Building Docker image..."
+        docker build -t my-app:${IMAGE_TAG} -f Dockerfile .
+        '''
+    }
+}
 
         stage('Push Image to ECR') {
             steps {
