@@ -5,6 +5,11 @@ pipeline {
         IMAGE_TAG = "${env.BUILD_NUMBER}"
         ECR_REPO = "476360959449.dkr.ecr.us-east-1.amazonaws.com/prod/devops"
         AWS_REGION = "us-east-1"
+
+        // EKS Deployment details
+        K8S_NAMESPACE = "prod"
+        K8S_DEPLOYMENT = "my-app"
+        K8S_CONTAINER  = "my-app"
     }
 
     stages {
@@ -16,17 +21,17 @@ pipeline {
             }
         }
 
-stage('Build Docker Image') {
-    steps {
-        sh '''
-        echo "Workspace content:"
-        ls -la
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                echo "Workspace content:"
+                ls -la
 
-        echo "Building Docker image..."
-        docker build -t my-app:${IMAGE_TAG} -f Dockerfile .
-        '''
-    }
-}
+                echo "Building Docker image..."
+                docker build -t my-app:${IMAGE_TAG} -f Dockerfile .
+                '''
+            }
+        }
 
         stage('Push Image to ECR') {
             steps {
@@ -41,6 +46,19 @@ stage('Build Docker Image') {
                 '''
             }
         }
+
+        stage('Deploy to EKS') {
+            steps {
+                sh '''
+                echo "Updating EKS deployment image..."
+                kubectl set image deployment/${K8S_DEPLOYMENT} ${K8S_CONTAINER}=${ECR_REPO}:${IMAGE_TAG} -n ${K8S_NAMESPACE}
+
+                echo "Verifying rollout..."
+                kubectl rollout status deployment/${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE} --timeout=120s
+                '''
+                echo "EKS Deployment Successful!"
+            }
+        }
     }
 
     post {
@@ -52,7 +70,7 @@ stage('Build Docker Image') {
             echo "❌ Pipeline failed!"
         }
         success {
-            echo "✅ Image pushed to ECR successfully!"
+            echo "✅ Image pushed and deployed to EKS successfully!"
         }
     }
 }
